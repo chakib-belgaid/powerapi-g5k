@@ -1,7 +1,7 @@
 # powerapi-g5k
 A sample project that demonstrate how to use Powerapi inside grid5000 
 
-#Requires 
+# Requires 
 
 1. **G5k** account 
    To open an account fill this  [form](https://www.grid5000.fr/mediawiki/index.php/Special:G5KRequestAccountUMS)  
@@ -21,10 +21,12 @@ If you are using MacOS  add the following line in the file
     
     You'll find the installation guide in the following [link](https://docs.docker.com/install/)
 
-4. **docker-machine-driver-g5k** 
+4. **docker-machine-driver-g5k**  Installed 
+To be enable the reservation of *g5k-machines* via docker machine plugin (In order to install docked and all it's infra in the g5k-machine once it is reserved )
+
    You can get it from this [repository](https://github.com/Spirals-Team/docker-machine-driver-g5k)
 
-#Usage
+# Usage
 
 1. After getting all the requirements and configuring your environment variables 
        
