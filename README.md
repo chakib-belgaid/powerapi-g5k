@@ -34,7 +34,7 @@ To be enable the reservation of *g5k-machines* via docker machine plugin (In ord
         export G5K_PASSWORD="********"
 
 launch the starter script startmachine with the given name of the machine and the time when it ends.
-#####example 
+##### example 
         ./startmachine.sh test1 15:00:00 
 
 this command will reserve a machine from now until 15:00 of the same day and it will give herthe name *test1* 
@@ -55,7 +55,7 @@ The default values of these parameters are
 
 2. You can connect to the machine via *docker-machine* it will offer you this [set of options](https://docs.docker.com/machine/reference/)
 
-#####example  
+##### example  
         docker-machine ls 
     
 It will list all actual reserved machines 
