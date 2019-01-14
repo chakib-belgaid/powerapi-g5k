@@ -50,10 +50,15 @@ The default values of these parameters are
 * time : *17:30*  if the actual time is between is before 17:30 else it will be *8:0* for the next day 
 
 * it will reserve an node in *paravance* from *rennes* site unless you change it in the script
+        you can find the different clusters in this [link](https://www.grid5000.fr/mediawiki/index.php/Hardware)
 
 * the database name : rapls  
 
-2. You can connect to the machine via *docker-machine* it will offer you this [set of options](https://docs.docker.com/machine/reference/)
+1. You can connect to the machine via *docker-machine* it will offer you this [set of options](https://docs.docker.com/machine/reference/)
+
+
+##### How it works: 
+
 
 ##### example  
         docker-machine ls 
