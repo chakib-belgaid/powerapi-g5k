@@ -63,7 +63,7 @@ SmartWatts, works a service.
 You launch the sensor (you find it as a docker container) in the machine that you want to monitor. Then this sensor will gather different metrics and upload them into the server (Mongodb base) after you can consult this base in order to get the information, 
 you find in the project a client written in  
 
-![Smartwatts architecture](https://github.com/chakib-belgaid/powerapi-g5k/images/SmartWatts.png "Smartwatts Architecture")
+![Smartwatts architecture](https://github.com/chakib-belgaid/powerapi-g5k/blob/master/images/SmartWatts.png "Smartwatts Architecture")
 
 ##### example  
         docker-machine ls 
