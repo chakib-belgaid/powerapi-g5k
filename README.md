@@ -51,6 +51,7 @@ The default values of these parameters are
 
 * it will reserve an node in *paravance* from *rennes* site unless you change it in the script
         you can find the different clusters in this [link](https://www.grid5000.fr/mediawiki/index.php/Hardware)
+Ps: this version of smartwats works only with machines that integrate Rapl sensors so in grid5000 case, the processor must be V3 or newer 
 
 * the database name : rapls  
 
@@ -58,7 +59,11 @@ The default values of these parameters are
 
 
 ##### How it works: 
+SmartWatts, works a service. 
+You launch the sensor (you find it as a docker container) in the machine that you want to monitor. Then this sensor will gather different metrics and upload them into the server (Mongodb base) after you can consult this base in order to get the information, 
+you find in the project a client written in  
 
+![Smartwatts architecture](https://github.com/chakib-belgaid/powerapi-g5k/images/smartwatts.png "Smartwatts Architecture")
 
 ##### example  
         docker-machine ls 
@@ -77,7 +82,7 @@ To copy files from local to the remote machine
 
 To delete the remote machine 
 
-3. you will find all the recorded data in a mongodb database situated in the address "mongodb://172.16.45.8:27017" 
+1. you will find all the recorded data in a mongodb database situated in the address "mongodb://172.16.45.8:27017" 
 
 you find here a jupyter client that uses pymongo to consult the database 
 
