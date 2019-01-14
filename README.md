@@ -25,6 +25,13 @@ If you are using MacOS  add the following line in the file
 To be enable the reservation of *g5k-machines* via docker machine plugin (In order to install docked and all it's infra in the g5k-machine once it is reserved )
 
    You can get it from this [repository](https://github.com/Spirals-Team/docker-machine-driver-g5k)
+   
+# How it works: 
+SmartWatts, works a service. 
+You launch the sensor (you find it as a docker container) in the machine that you want to monitor. Then this sensor will gather different metrics and upload them into the server (Mongodb base) after you can consult this base in order to get the information, 
+you find in the project a client written in  
+
+![Smartwatts architecture](https://github.com/chakib-belgaid/powerapi-g5k/raw/master/images/SmartWatts.png "Smartwatts Architecture")
 
 # Usage
 
@@ -57,13 +64,6 @@ Ps: this version of smartwats works only with machines that integrate Rapl senso
 
 1. You can connect to the machine via *docker-machine* it will offer you this [set of options](https://docs.docker.com/machine/reference/)
 
-
-# How it works: 
-SmartWatts, works a service. 
-You launch the sensor (you find it as a docker container) in the machine that you want to monitor. Then this sensor will gather different metrics and upload them into the server (Mongodb base) after you can consult this base in order to get the information, 
-you find in the project a client written in  
-
-![Smartwatts architecture](https://github.com/chakib-belgaid/powerapi-g5k/raw/master/images/SmartWatts.png "Smartwatts Architecture")
 
 ##### example  
         docker-machine ls 
