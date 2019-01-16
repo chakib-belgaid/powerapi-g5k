@@ -52,8 +52,8 @@ fi
 
 # exit 
 
-dbname='rapls'
-name=$name`date +"%d%m%y"`
+dbname='rapls2'
+name=$name
 wallTime=$(timediff $endT  `date +%H:%M:%S`)
 echo $wallTime
 

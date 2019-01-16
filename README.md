@@ -82,7 +82,21 @@ To copy files from local to the remote machine
 
 To delete the remote machine 
 
-1. you will find all the recorded data in a mongodb database situated in the address "mongodb://172.16.45.8:27017" 
+##### testing example 
+
+launch your test inside a docker container and it's better to pin it into the first socket
+
+        docker run --name test1 --cpuset-cpus -0 chakibmed/sleep 
+the test will just run for 20 secs and then shut down 
+
+you can get the **Id** of your container using the following command 
+
+        docker inspect --format "{{.Id}}" test1
+
+
+##### Gettind the data 
+
+you will find all the recorded data in a mongodb database situated in the address "mongodb://172.16.45.8:27017" 
 
 you find here a jupyter client that uses pymongo to consult the database 
 
@@ -97,3 +111,5 @@ and to start it run this command
 to connect use the authentication link that you'll get from 
 
         docker logs notebook 
+
+you'll find how to get the energy in the following [example ](computeConso.ipynb)
