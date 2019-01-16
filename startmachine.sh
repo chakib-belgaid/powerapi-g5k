@@ -1,3 +1,4 @@
+
 #! /bin/bash 
 
 timediff()
@@ -53,9 +54,9 @@ fi
 # exit 
 
 dbname='rapls2'
-name=$name
+name=$name`date +"%d%m%y"`
 wallTime=$(timediff $endT  `date +%H:%M:%S`)
-echo $wallTime
+echo $name  $wallTime
 
 
 
@@ -63,8 +64,8 @@ docker-machine create -d g5k \
 --engine-storage-driver "overlay2" \
 --g5k-reuse-ref-environment \
 --engine-opt "data-root=/tmp/docker" \
---g5k-site "rennes" \ 
---g5k-resource-properties "cluster = 'paravance'" \
+--g5k-site "lille" \
+--g5k-resource-properties "cluster='chetemi'" \
 --g5k-walltime "$wallTime" \
 $name  && \
 docker-machine ssh $name modprobe msr && \
@@ -73,12 +74,18 @@ docker-machine ssh $name docker run --privileged --name smartwatts-sensor -td -v
         -s "pcu" -o -e "UNC_P_POWER_STATE_OCCUPANCY:CORES_C0" -e "UNC_P_POWER_STATE_OCCUPANCY:CORES_C3" -e "UNC_P_POWER_STATE_OCCUPANCY:CORES_C6" \
         -c "core" -e "CPU_CLK_THREAD_UNHALTED:REF_P" -e "CPU_CLK_THREAD_UNHALTED:THREAD_P" -e "LLC_MISSES"
 
-# docker-machine ssh $name pip install pymongo 
-# day=$(date +"%d%m%y")
-# docker-machine ssh $name echo  "$name > machinename"
+# docker-machine ssh $name ln -s ''
+echo  "$name;$dbname" > machinename 
+docker-machine scp machinename $name:~/
+docker-machine scp tester.sh $name:~/ 
+docker-machine scp listener2.sh $name:~/ 
+rm machinename
+# docker-machine ssh $name echo  "$name2 > machinename"
 # docker-machine ssh $name mkdir $name   
 # docker-machine ssh $name chown -R mbelgaid $name 
 # docker-machine ssh $name chmod o+x . 
+# docker-machine ssh $name pip install pymongo
+
 # ssh mbelgaid@frontend.lille.grid5000.fr mkdir  -p "tests"$day"/"$name 
 # docker-machine ssh $name echo "tests$day/$name > dirname "
 # docker-machine scp analyse.sh $name:

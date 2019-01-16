@@ -35,12 +35,14 @@ you find in the project a client written in
 
 # Usage
 
+# Reservation of the machine 
+
 1. After getting all the requirements and configuring your environment variables 
        
         export G5K_USERNAME="user"
         export G5K_PASSWORD="********"
 
-launch the starter script startmachine with the given name of the machine and the time when it ends.
+2. launch the starter script startmachine with the given name of the machine and the time when it ends.
 ##### example 
         ./startmachine.sh test1 15:00:00 
 
@@ -57,48 +59,80 @@ The default values of these parameters are
 * time : *17:30*  if the actual time is between is before 17:30 else it will be *8:0* for the next day 
 
 * it will reserve an node in *paravance* from *rennes* site unless you change it in the script
-        you can find the different clusters in this [link](https://www.grid5000.fr/mediawiki/index.php/Hardware)
+        you can find the different clusters in this [link](https://www.grid5000.fr/mediawiki/index.php/Har dware)
 Ps: this version of smartwats works only with machines that integrate Rapl sensors so in grid5000 case, the processor must be V3 or newer 
 
 * the database name : rapls  
 
-1. You can connect to the machine via *docker-machine* it will offer you this [set of options](https://docs.docker.com/machine/reference/)
+3. You can connect to the machine via *docker-machine* it will offer you this [set of options](https://docs.docker.com/machine/reference/)
 
-
-##### example  
         docker-machine ls 
     
 It will list all actual reserved machines 
        
         docker-machine ssh machinename 
 
-To connect the remote machine through ssh  (the usage of [screen](https://linux.die.net/man/1/screen) is recommended to preserve the session even after a loss of connection )
+4. To connect the remote machine through ssh  (the usage of [screen](https://linux.die.net/man/1/screen) is recommended to preserve the session even after a loss of connection )
 
         docker-machine scp localfile machinename:/file 
 
-To copy files from local to the remote machine 
+5. To copy files from local to the remote machine 
 
         docker-machine rm machinename 
 
 To delete the remote machine 
 
-##### testing example 
+## Launch the tests 
+after we connect to the reserved machine using the commande 
 
-launch your test inside a docker container and it's better to pin it into the first socket
+        docker-machine ssh machinename
 
-        docker run --name test1 --cpuset-cpus -0 chakibmed/sleep 
-the test will just run for 20 secs and then shut down 
+just launch the script [tester.sh](tester.sh)
 
-you can get the **Id** of your container using the following command 
+with the name of the container that you right to measure  
 
-        docker inspect --format "{{.Id}}" test1
+        ./tester.sh containername args 
 
+#### example 
 
-##### Gettind the data 
+The command 
 
-you will find all the recorded data in a mongodb database situated in the address "mongodb://172.16.45.8:27017" 
+        ./tester.sh chakibmed/sleep n
 
-you find here a jupyter client that uses pymongo to consult the database 
+Will launch a container of the image 8*chakibmed/sleep*8 with **n** as a parameter  
+
+the test is just an idle container that sleeps during **n** seconds 
+
+#### Remark 
+by default it will take the name of the image + the tag of the version as a test name. In our case it the container name will be **sleep** 
+
+so if we launch another test 
+
+        ./tester.sh chakibmed/contaier:tag 
+
+the default name will be **container_tag** 
+
+but you can specify it with the option -n 
+
+        .tester.sh -n mytest chakibmed/sleep 5 
+
+will give the name **mytest** to the container 
+
+To check the name of the container you can run 
+
+        docker ps 
+
+## get the measures 
+
+you'll find the measure in a collection named **recap"machinename"** a mongodb database situated in the address "mongodb://172.16.45.8:27017" 
+
+for more details check the following [file](computeConso.ipynb) 
+
+#### remark 
+
+1. you can find more details such as the power consumption during the time ..etc in the second part [file](computeConso.ipynb)
+
+2. you find here a jupyter client that uses pymongo to consult the database 
 
 you can download the docker container 
         
@@ -112,4 +146,3 @@ to connect use the authentication link that you'll get from
 
         docker logs notebook 
 
-you'll find how to get the energy in the following [example ](computeConso.ipynb)
