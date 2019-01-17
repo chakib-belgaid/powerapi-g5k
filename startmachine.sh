@@ -69,7 +69,7 @@ docker-machine create -d g5k \
 --g5k-walltime "$wallTime" \
 $name  && \
 docker-machine ssh $name modprobe msr && \
-docker-machine ssh $name docker run --privileged --name smartwatts-sensor -td -v /sys:/sys -v /var/lib/docker/containers:/var/lib/docker/containers:ro gfieni/powerapi:sensor -n $name -U "mongodb://172.16.45.8:27017" -D $dbname -C "sensor$name" \
+docker-machine ssh $name docker run --privileged --name smartwatts-sensor -td -v /sys:/sys -v /tmp/docker/containers:/var/lib/docker/containers:ro gfieni/powerapi:sensor -n $name -U "mongodb://172.16.45.8:27017" -D $dbname -C "sensor$name" \
         -s "rapl" -o -e "RAPL_ENERGY_PKG" -e "RAPL_ENERGY_DRAM" \
         -s "pcu" -o -e "UNC_P_POWER_STATE_OCCUPANCY:CORES_C0" -e "UNC_P_POWER_STATE_OCCUPANCY:CORES_C3" -e "UNC_P_POWER_STATE_OCCUPANCY:CORES_C6" \
         -c "core" -e "CPU_CLK_THREAD_UNHALTED:REF_P" -e "CPU_CLK_THREAD_UNHALTED:THREAD_P" -e "LLC_MISSES"
