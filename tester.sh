@@ -19,6 +19,6 @@ if [ -z $name ] ; then
 
 echo $name 
 echo $program 
-docker run -t   --cpuset-cpus 0  --name $name $program | ./listener2.sh $name 
+docker run -t   --cpuset-cpus 0  --name $name $program 2>>logs.txt | ./listener2.sh $name 2>> logslistener.txt
 #  | ./listener2.sh $name
 docker rm  $name

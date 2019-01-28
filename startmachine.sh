@@ -77,8 +77,8 @@ docker-machine ssh $name docker run --privileged --name smartwatts-sensor -td -v
 # docker-machine ssh $name ln -s ''
 echo  "$name;$dbname" > machinename 
 docker-machine scp machinename $name:~/
-docker-machine scp tester.sh $name:~/ 
-docker-machine scp listener2.sh $name:~/ 
+docker-machine ssh $name "cp /home/$G5K_USERNAME/tester.sh ."
+docker-machine ssh $name "cp /home/$G5K_USERNAME/listener2.sh ."
 rm machinename
 # docker-machine ssh $name echo  "$name2 > machinename"
 # docker-machine ssh $name mkdir $name   
