@@ -3,8 +3,13 @@ name=$1
 warmup='--++'
 mainloop='++--'
 begintime=`date +%s`
-database=`cut -d ';' -f 2 machinename`
-machinename=`cut -d ';' -f 1 machinename`
+# database=`cut -d ';' -f 2 machinename`
+database=rapls2
+# machinename=`cut -d ';' -f 1 machinename`
+machinename="test"
+serveraddres="127.0.0.1"
+serverport="27017"
+
 while read line
 do
     prefix=${line:0:4} 
@@ -32,5 +37,5 @@ echo "++++end---"$endtime ;
 
 warmuptime=warmuptime&executiontime=$executiontime&endtime=$endtime
 
-curl -X POST  "172.16.45.8:27019/$database/$machinename?name=$name&begin=$begintime&warmup=$warmuptime&execution=$executiontime&end=$endtime&id=$id"
+curl -X POST  "$serveraddres:$serverport/$database/$machinename?name=$name&begin=$begintime&warmup=$warmuptime&execution=$executiontime&end=$endtime&id=$id"
 # `python logger.sh.py $name $begintime $warmuptime $executiontime $endtime $collectionname`
