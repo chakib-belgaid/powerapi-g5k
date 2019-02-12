@@ -64,7 +64,7 @@ Ps: don't forget to replace the variables *serveraddress* *serverport* and *name
 with the name of the container that you right to measure  
 
         ./tester.sh containername args 
-ps: don't forget to change the serveraddress in the script [[listener2.sh](listener2.sh)]
+ps: don't forget to change the serveraddres in the script [listener2.sh](listener2.sh)
 
 #### example 
 
