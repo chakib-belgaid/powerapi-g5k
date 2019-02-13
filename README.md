@@ -20,8 +20,9 @@ As we see in the figure below, we can launch many slaves with a single server.
 
 ## Software
 
-- **Test machine**: Docker
-- **Server machine**: MondogDb server, Docker.
+**Docker** 
+you can find the installation guide in the following [link](https://docs.docker.com/install/linux/docker-ce/ubuntu/).
+
 
 # Usage: 
 
