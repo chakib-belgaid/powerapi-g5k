@@ -8,7 +8,7 @@ database=rapls2
 # machinename=`cut -d ';' -f 1 machinename`
 machinename="test"
 serveraddres="127.0.0.1"
-serverport="27017"
+serverport="27019"
 
 while read line
 do

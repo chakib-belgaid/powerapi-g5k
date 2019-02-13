@@ -27,13 +27,17 @@ you can find the installation guide in the following [link](https://docs.docker.
 # Usage: 
 
 - **Server**: 
-1. Start a [mangoBb server](https://www.mongodb.com) using the official [Docker image](https://hub.docker.com/_/mongo)
+1. create a docker network using the following command 
+        
+        docker network create aloha 
+
+2. Start a [mangoBb server](https://www.mongodb.com) using the official [Docker image](https://hub.docker.com/_/mongo)
    example: 
 
-        docker run --name mongobase -p docker ps  27017:27017 --net aloha -d mongo
+        docker run --name mongobase -p 27017:27017 --net aloha -d mongo
 here we run a docker container named *mongobase* mapped to the port 27017 and associated to the docker network *aloha*.
 
-2. Start the [bitwatts listener](https://hub.docker.com/r/chakibmed/bitwatts-g5k-energy) 
+3. Start the [bitwatts listener](https://hub.docker.com/r/chakibmed/bitwatts-g5k-energy) 
 
         docker run -d --name listener -p 27019:4443 --net aloha chakibmed/bitwatts-g5k-energy:latest 
 
