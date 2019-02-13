@@ -6,9 +6,9 @@ begintime=`date +%s`
 # database=`cut -d ';' -f 2 machinename`
 database=rapls2
 # machinename=`cut -d ';' -f 1 machinename`
-machinename="test"
-serveraddres="127.0.0.1"
-serverport="27019"
+machinename="test" #need to be changed 
+serveraddres="127.0.0.1" # need to be changed 
+serverport="27019" # need to match the port given to the docker container  chakibmed/bitwatts-g5k-energy
 
 while read line
 do

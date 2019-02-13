@@ -54,22 +54,30 @@ Ps: The name of the docker container of mongodb must be **mongobase** in order t
    
         docker run --privileged --name smartwatts-sensor -td \
         -v /sys:/sys -v /var/docker/containers:/var/lib/docker/containers:ro \
-        gfieni/powerapi:sensor -n $name -U "mongodb:$serveraddress:$serverport" -D $rapls2 -C "sensor$name" \
+        gfieni/powerapi:sensor -n $name -U "mongodb:$serveraddress:$serverport" -D rapls2 -C "sensor$name" \
         -s "rapl" -o -e "RAPL_ENERGY_PKG" -e "RAPL_ENERGY_DRAM" \
-        -s "pcu" -o -e "UNC_P_POWER_STATE_OCCUPANCY:CORES_C0" -e \
-        "UNC_P_POWER_STATE_OCCUPANCY:CORES_C3" \
+        -s "pcu" -o -e "UNC_P_POWER_STATE_OCCUPANCY:CORES_C0" \
+        -e "UNC_P_POWER_STATE_OCCUPANCY:CORES_C3" \
         -e "UNC_P_POWER_STATE_OCCUPANCY:CORES_C6" \
         -c "core" -e "CPU_CLK_THREAD_UNHALTED:REF_P" \
         -e "CPU_CLK_THREAD_UNHALTED:THREAD_P" -e "LLC_MISSES"
 
-Ps: don't forget to replace the variables *serveraddress* *serverport* and *name* with their values (name if the name of the test machine).
+Ps:
+- Don't forget to replace the variables *serveraddress* *serverport* and *name* with their values (name if the name of the test machine).
+- If your machine doesn't support any of the other modules, just remove them. The minimal command should look like:
+  
+        docker run --privileged --name smartwatts-sensor -td \
+        -v /sys:/sys -v /var/docker/containers:/var/lib/docker/containers:ro \
+        gfieni/powerapi:sensor -n $name -U "mongodb:$serveraddress:$serverport" \
+        -D rapls2 -C "sensor$name" \
+        -s "rapl" -o -e "RAPL_ENERGY_PKG"
 
-3. launch the script [tester.sh](tester.sh)
+1. launch the script [tester.sh](tester.sh)
 
 with the name of the container that you right to measure  
 
         ./tester.sh containername args 
-ps: don't forget to change the serveraddres in the script [listener2.sh](listener2.sh)
+ps: don't forget to change the *server addres* *mchinename* and *server port* in the script [listener2.sh](listener2.sh)
 
 #### example 
 
@@ -77,7 +85,7 @@ The command
 
         ./tester.sh chakibmed/sleep n
 
-Will launch a container of the image 8*chakibmed/sleep*8 with **n** as a parameter  
+Will launch a container of the image *chakibmed/sleep* with **n** as a parameter  
 
 the test is just an idle container that sleeps during **n** seconds 
 
