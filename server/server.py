@@ -32,12 +32,14 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self._machine=testCase(self._machinename,database=self._database,serveraddr=SERVERAADR,serverport=SERVERPORT)
         queries=parse_qs(query.query)
         self._values=process({key :queries[key][0] for key  in queries})
+        print( "start processing ")
         self.handlevalues()
 
     def handlevalues(self) : 
 
         db=client[self._database]
         recap=self._machine.getrecap(self._values)
+        # print(recap)
         db["recap"+self._machinename].insert_one(recap)
         # print("#------------#")
         # print ('machine name : '+self._machinename)
@@ -49,10 +51,10 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
 def process(x):
     """convert the time stamps from int to datetame """
-    x['execution']=datetime.utcfromtimestamp(int(x['execution']))
+    x['beginexecution']=datetime.utcfromtimestamp(int(x['beginexecution']))
     x['begin']=datetime.utcfromtimestamp(int(x['begin']))
     x['end']=datetime.utcfromtimestamp(int(x['end']))
-    x['warmup']=datetime.utcfromtimestamp(int(x['warmup']))
+    x['beginwarmup']=datetime.utcfromtimestamp(int(x['beginwarmup']))
     return x
 
 
@@ -88,7 +90,9 @@ class testCase(object):
     def getpowersFromInterval(self,begin,end): 
         x=list(self._sensors.find({'target':'all','timestamp' :{'$gte':begin,'$lte':end}}))
         conso= pd.DataFrame(x)
-
+        if len(x) <= 0 : 
+            return conso
+        
         headers=self._get_headers(x[0])
         for i in headers: 
             socket,event=i 
@@ -117,17 +121,18 @@ class testCase(object):
         return powers.sum()
     
     def getrecap(self,target):
-        warmupPowers = self.getpowersFromInterval(target['warmup'],target['execution'])
-        executionPowers = self.getpowersFromInterval(target['execution'],target['end'])
+        warmupPowers = self.getpowersFromInterval(target['beginwarmup'],target['beginexecution'])
+        executionPowers = self.getpowersFromInterval(target['beginexecution'],target['end'])
         
 #         meausres = self._db['recap'+self._testname].find(projection={'_id': False,'id':False})
         res=target
-        res['warmup time']= (target['execution']-target['warmup']).total_seconds() 
-        res['execution time']= (target['end']-target['execution'] ).total_seconds()
-        warmupEnergies=warmupPowers.sum()
-        executionEnergies=executionPowers.sum()
+        res['warmup time']= (target['beginexecution']-target['beginwarmup']).total_seconds() 
+        res['execution time']= (target['end']-target['beginexecution'] ).total_seconds()
+        warmupEnergies=warmupPowers.sum() 
+        executionEnergies=executionPowers.sum() 
         for i in warmupEnergies.keys(): 
             res['warmup_'+ i]=warmupEnergies[i]
+        for i in executionEnergies.keys():
             res['execution_'+ i]=executionEnergies[i]     
         return res
 
