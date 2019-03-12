@@ -65,7 +65,7 @@ docker-machine create -d g5k \
 --g5k-reuse-ref-environment \
 --engine-opt "data-root=/tmp/docker" \
 --g5k-site "lille" \
---g5k-resource-properties "cluster='chetemi'" \
+--g5k-resource-properties "cluster='chifflet'" \
 --g5k-walltime "$wallTime" \
 $name  && \
 docker-machine ssh $name modprobe msr && \
@@ -77,8 +77,7 @@ docker-machine ssh $name docker run --privileged --name smartwatts-sensor -td -v
 # docker-machine ssh $name ln -s ''
 echo  "$name;$dbname" > machinename 
 docker-machine scp machinename $name:~/
-docker-machine ssh $name "cp /home/$G5K_USERNAME/tester.sh ."
-docker-machine ssh $name "cp /home/$G5K_USERNAME/listener2.sh ."
+docker-machine ssh $name "cp /home/$G5K_USERNAME/scripts/.bashrc ."
 rm machinename
 # docker-machine ssh $name echo  "$name2 > machinename"
 # docker-machine ssh $name mkdir $name   

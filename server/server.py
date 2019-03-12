@@ -5,8 +5,14 @@ from datetime import datetime
 import math 
 import pandas as pd
 from urllib.parse import urlparse, parse_qs
+from powerapi.formula import RAPLFormulaHWPCReportHandler, FormulaState
+from powerapi.report import HWPCReport
 
-client = pymongo.MongoClient('mongobase', 27017)
+
+# SERVERAADR='172.16.45.8'
+SERVERAADR='mongobase'
+SERVERPORT=27017
+client = pymongo.MongoClient(SERVERAADR,SERVERPORT )
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
@@ -17,81 +23,113 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
 
-        # content_length = int(self.headers['Content-Length'])
-        # body = self.rfile.read(content_length)
         self.send_response(200)
-        # print('yolo')
-
         query=urlparse(self.path)
-        print(query)
         self.end_headers()
         path=query.path.split('/')
         self._database=path[1]
         self._machinename=path[2]
+        self._machine=testCase(self._machinename,database=self._database,serveraddr=SERVERAADR,serverport=SERVERPORT)
         queries=parse_qs(query.query)
-        self._values={key :queries[key][0] for key  in queries}
-        print(self._values)
-
-
+        self._values=process({key :queries[key][0] for key  in queries})
         self.handlevalues()
 
     def handlevalues(self) : 
 
         db=client[self._database]
-        db['testcases'+self._machinename].insert_one(self._values)
-        self._sensors=db['sensor'+self._machinename]
-        recap=self.getrecap(self._values)
+        recap=self._machine.getrecap(self._values)
         db["recap"+self._machinename].insert_one(recap)
-
-        print("#------------#")
-        print ('machine name : '+self._machinename)
-        print('database : '+ self._database)
-        print(recap)
+        # print("#------------#")
+        # print ('machine name : '+self._machinename)
+        # print('database : '+ self._database)
+        # print(recap)
 
         
 
 
-
-
-
-    def getpowers(self,times): 
-        x=list(self._sensors.find({'target':'system','timestamp' :{'$gte':times['begin']  ,'$lte':times['end']}},projection=['rapl','timestamp']))
-        conso= pd.DataFrame(x)
-        sonde=next(iter(x[0]['rapl']['0']))
-        conso['power']=conso['rapl'].apply(lambda row :math.ldexp( row['0'][sonde]  ['RAPL_ENERGY_PKG'],-32))
-        warmup=conso[(conso["timestamp"]<=times["execution"]) & (conso  ["timestamp"]>times["warmup"] )]
-        execution = conso[(conso["timestamp"]>times["execution"]) ]
-        return warmup.loc[:,['timestamp','power']],execution.loc[:,['timestamp',    'power']],
-
-
-
-
-    def getrecap(self,target):
-        """require a row from the database and not a times object"""
-        times=gettimes(target)
-        warmuppowers,executionpowers=self.getpowers(times)
-        return {'name': target['name'] 
-                ,'warmup time': (int(target['execution'])-int(target['warmup'])) 
-                ,'warmup energy': getenergy(warmuppowers)
-                ,'execution time': (int(target['end'])-int(target['execution']) )
-                ,'execution energy': getenergy(executionpowers),
-                'id':target['id'],
-               
-               }
-
-
-def gettimes(x):
+def process(x):
     """convert the time stamps from int to datetame """
-    l={}
-    l['execution']=datetime.utcfromtimestamp(int(x['execution']))
-    l['begin']=datetime.utcfromtimestamp(int(x['begin']))
-    l['end']=datetime.utcfromtimestamp(int(x['end']))
-    l['warmup']=datetime.utcfromtimestamp(int(x['warmup']))
-    return l
+    x['execution']=datetime.utcfromtimestamp(int(x['execution']))
+    x['begin']=datetime.utcfromtimestamp(int(x['begin']))
+    x['end']=datetime.utcfromtimestamp(int(x['end']))
+    x['warmup']=datetime.utcfromtimestamp(int(x['warmup']))
+    return x
 
-def getenergy(powers):
-    return powers['power'].sum()
 
+class testCase(object): 
+    """in general its just the name of the machine where we launched the test """
+    def __init__ (self , testname,database='rapls2',serveraddr='172.16.45.8',serverport=27017): 
+        self._client = pymongo.MongoClient(serveraddr, serverport)
+        self._db=self._client[database]
+        self._testname=testname 
+        self._sensors=self._db['sensor'+self._testname]
+        self._formula_id = (None,)
+        self._state = FormulaState(None, None, None, self._formula_id)
+        self._handler = RAPLFormulaHWPCReportHandler(None)
+        
+    def gettimetamps(self,containername): 
+        containerdata=list(self._sensors.find({'target':containername},projection=['timestamp']))
+        begintime= containerdata[0]['timestamp']
+        endtime=containerdata[-1]['timestamp']
+        return begintime , endtime 
+
+    def _process_power(self,row,socket,event):
+        hwpc_report = HWPCReport.deserialize(row)
+        for i in self._handler._process_report(hwpc_report, self._state) : 
+            if i.metadata['socket']== socket and i.metadata['event']==event : 
+                return i.power
+        return -1 
+    
+    def _get_headers(self,row):
+        hwpc_report = HWPCReport.deserialize(row)
+        x=self._handler._process_report(hwpc_report,self._state)
+        return [(i.metadata['socket'],i.metadata['event']) for i in x ]
+    
+    def getpowersFromInterval(self,begin,end): 
+        x=list(self._sensors.find({'target':'all','timestamp' :{'$gte':begin,'$lte':end}}))
+        conso= pd.DataFrame(x)
+
+        headers=self._get_headers(x[0])
+        for i in headers: 
+            socket,event=i 
+            title="{}_{}".format(event.split('_')[-1],socket)
+            conso[title]=conso.T.apply(lambda row: self._process_power(row,socket,event))
+
+        return conso.drop(["_id","groups","sensor","target"],axis=1)
+
+    
+    def getpowers(self,containername): 
+        #get the power consumption of the system  between begin and end 
+        begin , end = self.gettimetamps(containername) 
+        x=list(self._sensors.find({'target':'all','timestamp' :{'$gte':begin,'$lte':end}}))
+        conso= pd.DataFrame(x)
+
+        headers=self._get_headers(x[0])
+        for i in headers: 
+            socket,event=i 
+            title="{}_{}".format(event.split('_')[-1],socket)
+            conso[title]=conso.T.apply(lambda row: self._process_power(row,socket,event))
+
+        return conso.drop(["_id","groups","sensor","target"],axis=1)
+   
+    def getenergy(self,containername):
+        powers =self.getpowers(containername)
+        return powers.sum()
+    
+    def getrecap(self,target):
+        warmupPowers = self.getpowersFromInterval(target['warmup'],target['execution'])
+        executionPowers = self.getpowersFromInterval(target['execution'],target['end'])
+        
+#         meausres = self._db['recap'+self._testname].find(projection={'_id': False,'id':False})
+        res=target
+        res['warmup time']= (target['execution']-target['warmup']).total_seconds() 
+        res['execution time']= (target['end']-target['execution'] ).total_seconds()
+        warmupEnergies=warmupPowers.sum()
+        executionEnergies=executionPowers.sum()
+        for i in warmupEnergies.keys(): 
+            res['warmup_'+ i]=warmupEnergies[i]
+            res['execution_'+ i]=executionEnergies[i]     
+        return res
 
 httpd = HTTPServer(('0.0.0.0', 4443), SimpleHTTPRequestHandler)
 
