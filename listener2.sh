@@ -32,5 +32,5 @@ echo "++++end---"$endtime ;
 
 warmuptime=warmuptime&executiontime=$executiontime&endtime=$endtime
 
-curl -X POST  "172.16.45.8:27019/$database/$machinename?name=$name&begin=$begintime&warmup=$warmuptime&execution=$executiontime&end=$endtime&id=$id"
+curl -X POST  "172.16.45.8:27019/$database/$machinename?name=$name&begin=$begintime&beginwarmup=$warmuptime&beginexecution=$executiontime&end=$endtime&id=$id"
 # `python logger.sh.py $name $begintime $warmuptime $executiontime $endtime $collectionname`
