@@ -41,7 +41,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         recap=self._machine.getrecap(self._values)
         # print(recap)
         db["recap"+self._machinename].insert_one(recap)
-        # print("#------------#")
+        print("#------------#")
         # print ('machine name : '+self._machinename)
         # print('database : '+ self._database)
         # print(recap)
@@ -96,7 +96,7 @@ class testCase(object):
         headers=self._get_headers(x[0])
         for i in headers: 
             socket,event=i 
-            title="{}_{}".format(event.split('_')[-1],socket)
+            title="powers_{}_{}".format(event.split('_')[-1],socket)
             conso[title]=conso.T.apply(lambda row: self._process_power(row,socket,event))
 
         return conso.drop(["_id","groups","sensor","target"],axis=1)
@@ -111,13 +111,19 @@ class testCase(object):
         headers=self._get_headers(x[0])
         for i in headers: 
             socket,event=i 
-            title="{}_{}".format(event.split('_')[-1],socket)
+            title="powers_{}_{}".format(event.split('_')[-1],socket)
             conso[title]=conso.T.apply(lambda row: self._process_power(row,socket,event))
 
         return conso.drop(["_id","groups","sensor","target"],axis=1)
    
     def getenergy(self,containername):
         powers =self.getpowers(containername)
+        powers=powers.loc[:,[ i for i in powers.columns if 'powers_' in i ]]
+        return powers.sum()    
+    
+    def getenergyfromInterval(self,begin,end):
+        powers =self.getpowersFromInterval(begin,end)
+        powers=powers.loc[:,[ i for i in powers.columns if 'powers_' in i ]]
         return powers.sum()
     
     def getrecap(self,target):
@@ -128,8 +134,8 @@ class testCase(object):
         res=target
         res['warmup time']= (target['beginexecution']-target['beginwarmup']).total_seconds() 
         res['execution time']= (target['end']-target['beginexecution'] ).total_seconds()
-        warmupEnergies=warmupPowers.sum() 
-        executionEnergies=executionPowers.sum() 
+        warmupEnergies=warmupPowers.loc[:,[ i for i in warmupPowers.columns if 'powers_' in i ]].sum() 
+        executionEnergies=executionPowers.loc[:,[ i for i in executionPowers.columns if 'powers_' in i ]].sum() 
         for i in warmupEnergies.keys(): 
             res['warmup_'+ i]=warmupEnergies[i]
         for i in executionEnergies.keys():
