@@ -136,7 +136,7 @@ for more details check the following [file](computeConso.ipynb)
 
 you can download the docker container 
         
-        docker pull chakibmed/jupyter:notebook 
+        docker pull chakibmed/jupyter:powerapi 
 
 and to start it run this command 
 

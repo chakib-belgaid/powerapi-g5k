@@ -1,6 +1,27 @@
 
 #! /bin/bash 
 
+while getopts "s:c:" o; do
+    case "${o}" in
+        s) 
+            site=${OPTARG}
+            ;;
+        c)  
+            cluster=${OPTARG}
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
+if [ -z $site ] ; then 
+    site='lille'; 
+fi 
+
+if [ -z $cluster ] ; then 
+    cluster='chetemi'; 
+fi 
+
+
 timediff()
 {
     timeB=$1 # 09:59:35
@@ -53,6 +74,8 @@ fi
 
 # exit 
 
+
+
 dbname='rapls2'
 name=$name`date +"%d%m%y"`
 wallTime=$(timediff $endT  `date +%H:%M:%S`)
@@ -64,8 +87,8 @@ docker-machine create -d g5k \
 --engine-storage-driver "overlay2" \
 --g5k-reuse-ref-environment \
 --engine-opt "data-root=/tmp/docker" \
---g5k-site "lille" \
---g5k-resource-properties "cluster='chifflet'" \
+--g5k-site "$site" \
+--g5k-resource-properties "cluster='$cluster'" \
 --g5k-walltime "$wallTime" \
 $name  && \
 docker-machine ssh $name modprobe msr && \
