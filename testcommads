@@ -1,0 +1,19 @@
+curl -X POST  "127.0.0.1:27019/rapls2/tt2080319?name='tommti_stacklesspython3_intArithmetic_50_1'&begin=1552052339&warmup=1552052339&execution=1552052344&end=1552052394&id='e1c4fa5ee3d8a42e2daf750a0166000a85f96d71cdef5b5f3e5ae66d4f50d498'"
+
+
+curl -X POST  "127.0.0.1:27019/rapls2/tt120319?name=lol&begin=1552415612&warmup=1552415612&execution=1552415612&end=1552415618&id=9345216911ed80be549493c165d4056b79f26ed4370874ee4a408afd0dff7b18"
+
+
+curl -X POST  "172.16.45.8:27019/rapls2/tt2080319?name='tommti_stacklesspython2_intArithmetic_50_0'&begin=1552051326&beginwarmup=1552051347&beginexecution=1552051351&end=1552051391&id='dd96b8001cf1a2d4e21e93886f2ea70e620ddd4b11001901890d0a4e46ac6099'"
+
+
+curl -X POST  "127.0.0.1:27019/rapls2/tt2080319?name=tommti_shedskin_intArithmetic_50_0&begin=1552052287&beginwarmup=1552052293&beginexecution=1552052293&end=1552052294&id=dd524e2421b22b8ae577f6031a4fec1d758fc55e32bb6812d9d16a9c249db152"
+
+x= machine._db['testcases'+machine._testname].find()
+
+for i in x: 
+    s='curl -X POST  \"$172.16.45.8:$27017/'+machine._database+'/'+machine._machinename+'?name='+i['name']+'&begin='+i['begin']+'&beginwarmup='+i['warmup']+'&beginexecution='+i['execution']+'&end='+i['end']+'&id='+i['id']+'\"'
+    break 
+
+
+

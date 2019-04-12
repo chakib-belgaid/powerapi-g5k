@@ -14,11 +14,11 @@ done
 shift $((OPTIND-1))
 
 if [ -z $site ] ; then 
-    site='lille'; 
+    site='rennes'; 
 fi 
 
 if [ -z $cluster ] ; then 
-    cluster='chetemi'; 
+    cluster='paravance'; 
 fi 
 
 
@@ -81,26 +81,31 @@ name=$name`date +"%d%m%y"`
 wallTime=$(timediff $endT  `date +%H:%M:%S`)
 echo $name  $wallTime
 
+# to make faster deployement but cant reboot # --g5k-reuse-ref-environment \ 
 
 
 docker-machine create -d g5k \
 --engine-storage-driver "overlay2" \
---g5k-reuse-ref-environment \
+--g5k-image "debian9-x64-min" \
 --engine-opt "data-root=/tmp/docker" \
 --g5k-site "$site" \
 --g5k-resource-properties "cluster='$cluster'" \
 --g5k-walltime "$wallTime" \
 $name  && \
-docker-machine ssh $name modprobe msr && \
-docker-machine ssh $name docker run --privileged --name smartwatts-sensor -td -v /sys:/sys -v /tmp/docker/containers:/var/lib/docker/containers:ro gfieni/powerapi:sensor -n $name -r "mongodb" -U "mongodb://172.16.45.8:27017" -D $dbname -C "sensor$name" \
-        -s "rapl" -o -e "RAPL_ENERGY_PKG" -e "RAPL_ENERGY_DRAM" \
+docker-machine ssh $name modprobe msr 
+docker-machine ssh $name docker run --privileged --name smartwatts-sensor  -td -v /sys:/sys -v /tmp/docker/containers:/var/lib/docker/containers:ro gfieni/powerapi:sensor -n $name -r "mongodb" -U "mongodb://172.16.45.8:27017" -D $dbname -C "sensor$name" \
+        -s "rapl" -o -e "RAPL_ENERGY_PKG"  -e "RAPL_ENERGY_DRAM"  \
         -s "pcu" -o -e "UNC_P_POWER_STATE_OCCUPANCY:CORES_C0" -e "UNC_P_POWER_STATE_OCCUPANCY:CORES_C3" -e "UNC_P_POWER_STATE_OCCUPANCY:CORES_C6" \
         -c "core" -e "CPU_CLK_THREAD_UNHALTED:REF_P" -e "CPU_CLK_THREAD_UNHALTED:THREAD_P" -e "LLC_MISSES"
 
 # docker-machine ssh $name ln -s ''
 echo  "$name;$dbname" > machinename 
 docker-machine scp machinename $name:~/
-docker-machine ssh $name "cp /home/$G5K_USERNAME/scripts/.bashrc ."
+docker-machine scp tester.sh $name:~/
+docker-machine scp listener2.sh $name:~/
+
+# docker-machine ssh $name "cp /home/$G5K_USERNAME/scripts/.bashrc ."
+# docker-machine ssh $name "cp /home/$G5K_USERNAME/scripts/* ."
 rm machinename
 # docker-machine ssh $name echo  "$name2 > machinename"
 # docker-machine ssh $name mkdir $name   
