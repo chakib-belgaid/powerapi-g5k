@@ -140,7 +140,7 @@ you can download the docker container
 
 and to start it run this command 
 
-        docker run -d -v "$(pwd)":/home/jovyan/work --name notebook2 -p 8888:8888 chakibmed/jupyter:powerapi 
+        docker run -d -v "$(pwd)":/home/jovyan/work --name notebook -p 8888:8888 chakibmed/jupyter:powerapi 
 
 to connect use the authentication link that you'll get from 
 
