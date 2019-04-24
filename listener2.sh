@@ -58,6 +58,6 @@ echo '++--endwarmup---'$executiontime
 echo "++++end---"$endtime ;
 
 
-echo "$serveraddr/$database/$machinename?name=$name&begin=$begintime&beginwarmup=$warmuptime&beginexecution=$executiontime&end=$endtime&id=$id"
-# curl -X POST  "$serveraddr/$database/$machinename?target=$name&begin=$begintime&beginwarmup=$warmuptime&beginexecution=$executiontime&end=$endtime&id=$id"
+# echo "$serveraddr/$database/$machinename?name=$name&begin=$begintime&beginwarmup=$warmuptime&beginexecution=$executiontime&end=$endtime&id=$id"
+curl -X POST  "$serveraddr/$database/$machinename?target=$name&begin=$begintime&beginwarmup=$warmuptime&beginexecution=$executiontime&end=$endtime&id=$id"
  
